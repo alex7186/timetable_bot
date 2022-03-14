@@ -5,6 +5,7 @@ args = list(sys.argv)[1:]
 
 if 'start' in args:
     cron = CronTab(user=True)
+    
 
     for existing_job in cron:
         if existing_job.comment == 'timetable_bot':
