@@ -1,0 +1,6 @@
+pandas
+numpy
+Pillow
+aiogram
+python-crontab
+openpyxl
