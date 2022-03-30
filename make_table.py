@@ -9,6 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 import random
 from aiogram import Bot
+
 # from aiogram.dispatcher import Dispatcher
 # from aiogram.utils import executor
 
@@ -33,30 +34,16 @@ pair_time = {
     "6" : ["18.00", "19.30"]
 }
 
-SCRIPT_PATH = "/home/pi/shared/scripts/timetable_bot"
-
-# operating with config.json file
-def _get_current_config():
-    global SCRIPT_PATH
-    with open(f'{SCRIPT_PATH}/config.json', 'r') as f:
-        return json.load(f)
-
-def _set_current_config(current_config : dict):
-    global SCRIPT_PATH
-    with open(f'{SCRIPT_PATH}/config.json', 'w') as f:
-        f.write(json.dump(current_config))
 
 
 
-CURRENT_CONFIG = _get_current_config()
+
 
 
 # setup telegram part
-async def send_message_to_user(user_id, message=None, image_value=None): 
-    global SCRIPT_PATH
-    global CURRENT_CONFIG
+async def send_message_to_user(user_id, message=None, image_value=None, TELEGRAM_KEY=None): 
 
-    bot = Bot(token=CURRENT_CONFIG['TELEGRAM_KEY'])
+    bot = Bot(token=TELEGRAM_KEY)
     # dp = Dispatcher(bot)
 
     if message != None and image_value == None:
@@ -68,8 +55,11 @@ async def send_message_to_user(user_id, message=None, image_value=None):
     await bot.session.close()
 
 class MakeTable():
-    def __init__(self, target_group) :
+    def __init__(self, target_group, SCRIPT_PATH=None, DOWNLOAD_LINK=None, FONT_PATH=None) :
         "setup variables"
+        self.SCRIPT_PATH = SCRIPT_PATH
+        self.DOWNLOAD_LINK = DOWNLOAD_LINK
+        self.FONT_PATH = FONT_PATH
         self.target_group = target_group
         
         self.week_type = "" # odd/even week number
@@ -89,7 +79,7 @@ class MakeTable():
     async def generate_pair_time_table(self, input_table):
         "generating table with week, pair_number, pair_start, pair_end "
         
-        pair_time_table = input_table.iloc[2:14:2, 1:4]
+        pair_time_table = input_table.iloc[2:14:2, self.pair_time_table_bias[0]:self.pair_time_table_bias[1]]
         pair_time_table = pair_time_table.reset_index(drop=True)
 
         pair_time_table = pd.concat(
@@ -105,7 +95,7 @@ class MakeTable():
         "parsing input table & generating table with dow, pairs, odd/even week flag, teacher, room_number"
 
         cols = list(input_table.columns)
-        partial_input_table = input_table.iloc[2:, cols.index(target_group): cols.index(target_group) + 4]
+        partial_input_table = input_table.iloc[0:, cols.index(target_group): cols.index(target_group) + 4]
 
         partial_input_table = partial_input_table.reset_index(drop=True)
         partial_input_table.columns = ('Предмет', 'Вид занятий', 'Преподаватель', 'Аудитория')
@@ -115,7 +105,6 @@ class MakeTable():
             ).repeat(12,axis=0), name='День недели')
         
         pair_time_table = await self.generate_pair_time_table(input_table)
-
         full_table = pd.concat(
             (
                 days_of_the_week,
@@ -127,6 +116,7 @@ class MakeTable():
             axis=1)
 
         full_table.fillna('', inplace=True)
+
         return full_table
 
 
@@ -142,6 +132,7 @@ class MakeTable():
 
             for pair_number, table_pairly in table_daily.groupby(('Номер пары')):
                 if pair_number not in res_dict[commp[day_of_the_week]]:
+
                     res_dict[commp[day_of_the_week]][int(pair_number)] = []
 
                 if table_pairly.iloc[0]['Предмет'] != '':
@@ -155,50 +146,55 @@ class MakeTable():
     async def get_table(self):
         "downloading and parsing the input table, or making table cache"
 
-        global SCRIPT_PATH
         # file was modified farther then 12h -> download new file
         cache_file_modified_date = pd.to_datetime(
-            os.path.getmtime(f"{SCRIPT_PATH}/timetable.json"), unit='s')
+            os.path.getmtime(f"{self.SCRIPT_PATH}/cahed_table.xlsx"), unit='s')
 
         # if (datetime.now() - cache_file_modified_date) / pd.Timedelta('1 hour') > 12:
             # print("trying to download the table")
-        r = requests.get(CURRENT_CONFIG['DOWNLOAD_LINK']) 
-        # try:
-        with BytesIO(r.content) as fh:
-            input_table = pd.io.excel.read_excel(fh)
+        
+        try:
+            r = requests.get(self.DOWNLOAD_LINK) 
+            with BytesIO(r.content) as fh:
+                input_table = pd.io.excel.read_excel(fh)
+                input_table.to_excel('cahed_table.xlsx')
+                downloaded = True
+                # print("the table downloaded successfully")
+        except Exception as e:
+            input_table = pd.read_excel(f'{self.SCRIPT_PATH}/cahed_table.xlsx')
+            downloaded = False
+            # print("Using cached table")
             
         input_table.columns = input_table.iloc[0]
         input_table = input_table.iloc[:74]
-
-        full_table = await self.generate_full_table(input_table, self.target_group)
-
-        res_dict = {
-            'нечетная' : await self.make_dict_from_odd_even_table(
-                full_table[full_table['Неделя'] == 'Нечетная']),
-            'четная' : await self.make_dict_from_odd_even_table(
-                full_table[full_table['Неделя'] == 'Четная'])
+  
+        try:   
+            self.pair_time_table_bias=(1,4)
+            full_table = await self.generate_full_table(input_table, self.target_group)
+        
+            res_dict = {
+                'нечетная' : await self.make_dict_from_odd_even_table(
+                    full_table[full_table['Неделя'] == 'Нечетная']),
+                'четная' : await self.make_dict_from_odd_even_table(
+                    full_table[full_table['Неделя'] == 'Четная'])
+            }
+        except Exception as e:
+            self.pair_time_table_bias=(2,5)
+            full_table = await self.generate_full_table(input_table, self.target_group)
+        
+            res_dict = {
+                'нечетная' : await self.make_dict_from_odd_even_table(
+                    full_table[full_table['Неделя'] == 'Нечетная']),
+                'четная' : await self.make_dict_from_odd_even_table(
+                    full_table[full_table['Неделя'] == 'Четная'])
         }
         
-        with open(f'{SCRIPT_PATH}/timetable.json', 'w') as f:
-            json.dump(res_dict, f)
-
-        # print("the table downloaded successfully")
         return {
-            "data": res_dict, "downloaded": True,  "date_modified" : None
+                "data": res_dict, 
+                "downloaded": downloaded,  
+                "date_modified" : cache_file_modified_date
             }
     
-            # except Exception as e:     
-            #     pass
-            #     # print(str(e))   
-            #     # print("error during the table downloading")
-            
-        # with open(f'{SCRIPT_PATH}/timetable.json', 'r') as f:
-        #     res_dict = json.load(f)
-        
-        # # print("Using cached table")
-        # return {
-        #     "data": res_dict, "downloaded": False, "date_modified" : cache_file_modified_date
-        #     }
 
 
     async def return_processed_table_data(self, tomorrow_bias=0):
@@ -324,14 +320,12 @@ class MakeTable():
         text_hight=15,
         ):
 
-        global SCRIPT_PATH
-
-        random_image_filename = random.choice(os.listdir(f'{SCRIPT_PATH}/images'))
+        random_image_filename = random.choice(os.listdir(f'{self.SCRIPT_PATH}/images'))
 
         lines_count = len(timetable_text.split('\n'))
         image_size = (400, 30 + 18 * lines_count)
 
-        img = Image.open(f"{SCRIPT_PATH}/images/{random_image_filename}")
+        img = Image.open(f"{self.SCRIPT_PATH}/images/{random_image_filename}")
         img = (await self.crop_image(img, *image_size)).point(lambda pixel : pixel * 0.5)
 
         drawer = ImageDraw.Draw(img)
@@ -345,7 +339,7 @@ class MakeTable():
         return img
 
     async def make_timetable_image_buff(self):
-        img = await self.make_timetable_image(self.table_text, CURRENT_CONFIG["FONT_PATH"])
+        img = await self.make_timetable_image(self.table_text, self.FONT_PATH)
 
         buff = BytesIO()
         img.save(buff, format='PNG')
