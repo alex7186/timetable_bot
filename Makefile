@@ -5,7 +5,7 @@ pull:
 
 	git add .;
 	git commit -m $today;
-	git push prigin master
+	git push origin master
 	# git pull https://github.com/alex7186/timetable_bot master	
 
 
