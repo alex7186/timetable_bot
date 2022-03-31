@@ -1,13 +1,11 @@
-today =`date '+%Y_%m_%d__%H_%M_%S'`;
+today =`date '+%Y_%m_%d__%H_%M_%S'`
 
 pull:
 	cd ~/shared/scripts/timetable_bot
 
-	git add .;
+	git add .
 	git commit -m "autocommit $(today)"
 	git push origin master
-	# git pull https://github.com/alex7186/timetable_bot master	
-
 
 setup:
 	pip3 install -r requirements.txt
