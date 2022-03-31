@@ -1,12 +1,12 @@
+today =`date '+%Y_%m_%d__%H_%M_%S'`;
+
 pull:
 	cd ~/shared/scripts/timetable_bot
 
-	today=`date '+%Y_%m_%d__%H_%M_%S'`;
-
 	git add .;
-	git commit -m "$today";
+	git commit -m "$(today)";
 	git push origin master
-	# git pull https://github.com/alex7186/timetable_bot master	
+	# # git pull https://github.com/alex7186/timetable_bot master	
 
 
 setup:
