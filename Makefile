@@ -1,4 +1,4 @@
-today =`date '+%Y_%m_%d__%H_%M_%S'`
+today =`date '+%Y-%m-%d  %H:%M:%S'`
 
 pull:
 	cd ~/shared/scripts/timetable_bot
