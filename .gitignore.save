@@ -1,0 +1,26 @@
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+The wildcard * operator in the second line insures that every parent folder and child file or folder around the .ipynb_checkpoints file will be ignored. .gitignore files are particularly useful when you are storing sensitive information like passwords and private API keys in your repository (probably in a .env file).
+
+Now, git will ignore those files forever. But its important to do that at the very beginning of your project. It’s important to remember that Git will only ignore files in this file after it exists. So if you add it to a project, it won’t track future versions of those files, but they are accessible in previous commits, which are easy to find in a public repository.
+
+For a typical data science project using a Jupyter Notebook, adding the checkpoint directory keeps your repository cleaner. It’s also just a great habit to get into (much like a .env file, but that’s for another post). I hope this helps!
+
+There are resources where people share their .gitignore files as well as online tools to create .gitignore files after entering the language or libraries you are using in your projects. One of these is gitignore.io.
+
+More from Chad Ruble
+
+Dad of two. Husband.
+
+Nov 6, 2018
+A First Dip into the NYC Open Data Pool
+
+The NYC Open Data initiative currently hosts over 2,200 datasets from 98 different city agencies. That’s a lot of information and more are being added all the time. It’s a great playground for data newbies and veterans alike with a huge range of data sets. NYC Open Data Mission Statement…
+Data Science
+
+4 min read
+A First Dip into the NYC Open Data Pool
+
+Love podcasts or audiobooks? Learn on the go with our new app.
+Try Knowable
