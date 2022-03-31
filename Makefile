@@ -4,9 +4,9 @@ pull:
 	cd ~/shared/scripts/timetable_bot
 
 	git add .;
-	git commit -m "$(today)";
+	git commit -m "autocommit $(today)"
 	git push origin master
-	# # git pull https://github.com/alex7186/timetable_bot master	
+	# git pull https://github.com/alex7186/timetable_bot master	
 
 
 setup:
