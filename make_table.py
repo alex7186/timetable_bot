@@ -66,6 +66,18 @@ class MakeTable:
         self.week_delta = 0  # number of weeks since starting
 
     async def _init(self):
+
+        current_week = datetime.now().isocalendar()[1]  # .dow
+        start_week = datetime.strptime("07.02.2022", "%d.%m.%Y").isocalendar()[1]
+
+        self.week_delta = current_week - start_week + 1
+
+        (
+            self.table_data,
+            self.table_data_downloaded,
+            self.table_modified_date,
+        ) = await self.return_processed_table_data()
+
         if days_of_the_week[str(datetime.today().weekday() + 1)] == "Вс":
             self.table_text = await self.make_week_table()
         else:
@@ -110,7 +122,7 @@ class MakeTable:
             "Аудитория",
         )
 
-        days_of_the_week = pd.Series(
+        days_of_the_week_table = pd.Series(
             np.array(
                 ("Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота")
             ).repeat(12, axis=0),
@@ -120,7 +132,7 @@ class MakeTable:
         pair_time_table = await self.generate_pair_time_table(input_table)
         full_table = pd.concat(
             (
-                days_of_the_week,
+                days_of_the_week_table,
                 pd.concat(
                     [pair_time_table]
                     * (partial_input_table.shape[0] // pair_time_table.shape[0]),
@@ -226,11 +238,9 @@ class MakeTable:
             "date_modified": cache_file_modified_date,
         }
 
-    async def return_processed_table_data(self, tomorrow_bias=0):
+    async def return_processed_table_data(self):
 
-        current_week = datetime.now().isocalendar()[1]  # .dow
-        start_week = datetime.strptime("07.02.2022", "%d.%m.%Y").isocalendar()[1]
-        self.week_delta = current_week - start_week + 1 + tomorrow_bias
+        
 
         if self.week_delta > 16:
             return None
@@ -263,17 +273,13 @@ class MakeTable:
 
     async def make_week_table(self):
 
-        (
-            table_data,
-            table_data_downloaded,
-            table_modified_date,
-        ) = await self.return_processed_table_data(tomorrow_bias=1)
+        
 
         current_day = days_of_the_week[str(datetime.now().weekday() + 1)]
 
         table_str = (
-            f"ПОЛУЧЕНО ИЗ КЭША ({str(table_modified_date)[:16]})\n\n"
-            if not table_data_downloaded
+            f"ПОЛУЧЕНО ИЗ КЭША ({str(self.table_modified_date)[:16]})\n\n"
+            if not self.table_data_downloaded
             else ""
         )
         table_str += (
@@ -295,12 +301,12 @@ class MakeTable:
             + ")\n\n"
         )
 
-        week_days = ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
+        # week_days = ("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
 
         count_of_pairs = 0
-        for week_day in week_days:
+        for week_day in days_of_the_week.values():
             try:
-                pairs = table_data[week_day]
+                pairs = self.table_data[week_day]
             except Exception:
                 continue
 
@@ -323,19 +329,15 @@ class MakeTable:
 
     async def make_today_table(self):
 
-        (
-            table_data,
-            table_data_downloaded,
-            table_modified_date,
-        ) = await self.return_processed_table_data()
+
 
         current_day = days_of_the_week[str(datetime.now().weekday() + 1)]
 
-        current_day_table = table_data[current_day]
+        current_day_table = self.table_data[current_day]
 
         table_str = (
-            f"ПОЛУЧЕНО ИЗ КЭША ({str(table_modified_date)[:16]})\n\n"
-            if not table_data_downloaded
+            f"ПОЛУЧЕНО ИЗ КЭША ({str(self.table_modified_date)[:16]})\n\n"
+            if not self.table_data_downloaded
             else ""
         )
 
@@ -356,7 +358,7 @@ class MakeTable:
             + ")\n\n"
         )
 
-        if current_day in list(table_data.keys()):
+        if current_day in list(self.table_data.keys()):
             content = ""
 
             for number, pair in current_day_table.items():
