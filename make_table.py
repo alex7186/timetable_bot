@@ -1,10 +1,8 @@
 from datetime import datetime
-from functools import partial
 import pandas as pd
 import numpy as np
 import requests
 from io import BytesIO
-import json
 from PIL import Image, ImageDraw, ImageFont
 import os
 import random
@@ -327,8 +325,6 @@ class MakeTable:
         return table_str
 
     async def make_today_table(self):
-
-
 
         current_day = days_of_the_week[str(datetime.now().weekday() + 1)]
 
