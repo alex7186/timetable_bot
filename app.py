@@ -1,3 +1,4 @@
+#%%
 import asyncio
 import sys
 import json
@@ -21,7 +22,7 @@ CURRENT_CONFIG = _get_current_config(SCRIPT_PATH)
 DOWNLOAD_LINK = CURRENT_CONFIG["DOWNLOAD_LINK"]
 FONT_PATH = CURRENT_CONFIG["FONT_PATH"]
 
-
+#%%
 async def fucking_async(telegram_id, target_group):
     table = MakeTable(
         target_group,
