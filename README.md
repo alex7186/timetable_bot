@@ -18,11 +18,13 @@ to disable script:<br>
   
 ## Setting configuration
   to make the bot work properly replace the following lines in `config.json` file:<br>
-  1. "TELEGRAM_KEY" : `<YOUR TELEGRAM BOT TOKEN>`
-  2. "TELEGRAM_GROUPS" : {<br>
+  * "TELEGRAM_GROUPS" : {<br>
         `<YOUR TELEGRAM ID>` : ["`<YOUR STUDY GROUP>`"]<br>
 
-  3. edit `FONT_PATH`, `SCRIPT_PATH` to the <b>propper path</b>
+  * edit `FONT_PATH`, `SCRIPT_PATH` to the <b>propper path</b>
+  
+  to insert telegram bot key:
+  * make file `telegram_bot_key.txt` and put your bot tocken into this file
   
 ## Example of program execution
 ![изображение](https://user-images.githubusercontent.com/16050682/161161953-d8489159-f5a6-4939-98d0-bbd9985afba6.png)
