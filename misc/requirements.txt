@@ -5,3 +5,5 @@ aiogram==2.19
 python-crontab==2.6.0
 openpyxl==3.0.9
 requests==2.25.1
+black==22.3.0
+logging==0.4.9.6S

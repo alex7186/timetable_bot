@@ -1,18 +1,21 @@
 today =`date '+%Y-%m-%d  %H:%M:%S'`
 
-pull:
+push:
 	cd ~/scripts/timetable_bot
-	black .
+	python -m black .
 	git add .
 	git commit -m "autocommit $(today)"
 	git push origin master
 
 setup:
 	pip3 install -r ./misc/requirements.txt
-	python3 /home/pi/scripts/timetable_bot/crontab_manager.py start
+	cd ~/scripts/timetable_bot
+	python3 /.crontab_manager.py start
 
 start:
-	python3 /home/pi/scripts/timetable_bot/app.py /home/pi/scripts/timetable_bot
+	cd ~/scripts/timetable_bot
+	python3 ./app.py /home/pi/scripts/timetable_bot
 
 stop:
-	python3 /home/pi/scripts/timetable_bot/crontab_manager.py stop
+	cd ~/scripts/timetable_bot	
+	python3 ./crontab_manager.py stop
