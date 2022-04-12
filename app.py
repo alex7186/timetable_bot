@@ -5,6 +5,8 @@ import json
 from make_table import send_message_to_user
 from make_table import MakeTable
 
+bot = None
+
 # operating with config.json file
 def _get_current_config(SCRIPT_PATH):
     with open(f"{SCRIPT_PATH}/config.json", "r") as f:
@@ -35,10 +37,12 @@ async def generate_targetgroup_timetable(target_group):
 
 
 async def send_table_to_user(timetable_image_buff, telegram_id):
-    await send_message_to_user(
+    global bot
+    bot = await send_message_to_user(
         user_id=telegram_id,
         image_value=timetable_image_buff,
         TELEGRAM_KEY=CURRENT_CONFIG["TELEGRAM_KEY"],
+        bot=bot,
     )
     # print(f"sended to {telegram_id} for group {timetable_image_buff[:20]}")
 
@@ -59,6 +63,12 @@ async def main():
 
     for event_loop_task in event_loop_tasks:
         await event_loop_task
+
+    global bot
+
+    if bot != None:
+        session = await bot.get_session()
+        await session.close()
 
 
 asyncio.run(main())

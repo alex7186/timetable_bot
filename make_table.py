@@ -35,11 +35,11 @@ pair_time = {
 
 # setup telegram part
 async def send_message_to_user(
-    user_id, message=None, image_value=None, TELEGRAM_KEY=None
+    user_id, message=None, image_value=None, TELEGRAM_KEY=None, bot=None
 ):
-
-    bot = Bot(token=TELEGRAM_KEY)
-    # dp = Dispatcher(bot)
+    if bot == None:
+        bot = Bot(token=TELEGRAM_KEY)
+        # dp = Dispatcher(bot)
 
     if message != None and image_value == None:
         await bot.send_message(user_id, message)
@@ -47,7 +47,9 @@ async def send_message_to_user(
         await bot.send_photo(user_id, photo=image_value)
     else:
         raise ValueError
-    await bot.session.close()
+    # await bot.session.close()
+
+    return bot
 
 
 class MakeTable:
