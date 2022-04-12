@@ -3,3 +3,4 @@ __pycache__
 .gitignore
 # cached_table.xlsx
 temp
+telegram_bot_key.txt
