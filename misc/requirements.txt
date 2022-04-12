@@ -1,0 +1,7 @@
+pandas==1.4.1
+numpy==1.22.1
+Pillow==9.1.0
+aiogram==2.19
+python-crontab==2.6.0
+openpyxl==3.0.9
+requests==2.25.1

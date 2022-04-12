@@ -6,7 +6,6 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont
 import os
 import random
-from aiogram import Bot
 
 # from aiogram.dispatcher import Dispatcher
 # from aiogram.utils import executor
@@ -33,25 +32,6 @@ pair_time = {
 }
 
 
-# setup telegram part
-async def send_message_to_user(
-    user_id, message=None, image_value=None, TELEGRAM_KEY=None, bot=None
-):
-    if bot == None:
-        bot = Bot(token=TELEGRAM_KEY)
-        # dp = Dispatcher(bot)
-
-    if message != None and image_value == None:
-        await bot.send_message(user_id, message)
-    elif message == None and image_value != None:
-        await bot.send_photo(user_id, photo=image_value)
-    else:
-        raise ValueError
-    # await bot.session.close()
-
-    return bot
-
-
 class MakeTable:
     def __init__(
         self,
@@ -59,7 +39,7 @@ class MakeTable:
         SCRIPT_PATH=None,
         DOWNLOAD_LINK=None,
         FONT_PATH=None,
-        CACHED_TABLE_NAME="cached_table.xlsx",
+        CACHED_TABLE_NAME="misc/cached_table.xlsx",
     ):
         "setup variables"
         self.SCRIPT_PATH = SCRIPT_PATH
@@ -410,9 +390,11 @@ class MakeTable:
         )
 
     async def pick_background_image(self):
-        random_image_filename = random.choice(os.listdir(f"{self.SCRIPT_PATH}/images"))
+        random_image_filename = random.choice(
+            os.listdir(f"{self.SCRIPT_PATH}/img/images")
+        )
         background_image = Image.open(
-            f"{self.SCRIPT_PATH}/images/{random_image_filename}"
+            f"{self.SCRIPT_PATH}/img/images/{random_image_filename}"
         )
 
         return background_image
