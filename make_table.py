@@ -52,13 +52,19 @@ async def send_message_to_user(
 
 class MakeTable:
     def __init__(
-        self, target_group, SCRIPT_PATH=None, DOWNLOAD_LINK=None, FONT_PATH=None
+        self,
+        target_group,
+        SCRIPT_PATH=None,
+        DOWNLOAD_LINK=None,
+        FONT_PATH=None,
+        CACHED_TABLE_NAME="cached_table.xlsx",
     ):
         "setup variables"
         self.SCRIPT_PATH = SCRIPT_PATH
         self.DOWNLOAD_LINK = DOWNLOAD_LINK
         self.FONT_PATH = FONT_PATH
         self.target_group = target_group
+        self.CACHED_TABLE_NAME = CACHED_TABLE_NAME
 
         self.week_type = ""  # odd/even week number
         self.week_delta = 0  # number of weeks since starting
@@ -179,28 +185,46 @@ class MakeTable:
 
         return res_dict  # TODO pd.DataFrame.pivot might make life easier (not sure :3 )
 
+    async def download_table(self):
+        "downloading the input table"
+        r = requests.get(self.DOWNLOAD_LINK)
+
+        with BytesIO(r.content) as fh:
+            input_table = pd.io.excel.read_excel(fh)
+            input_table.to_excel(f"{self.SCRIPT_PATH}/{self.CACHE_TABLE_NAME}")
+
+        return input_table
+
+    async def get_cached_table(self):
+        return pd.read_excel(f"{self.SCRIPT_PATH}/{self.CACHED_TABLE_NAME}")
+
+    async def update_table_downloading_link(self):
+        pass
+
     async def get_table(self):
-        "downloading and parsing the input table, or making table cache"
+        "parsing the input table, making table cache"
 
         # file was modified farther then 12h -> download new file
         cache_file_modified_date = pd.to_datetime(
-            os.path.getmtime(f"{self.SCRIPT_PATH}/cahed_table.xlsx"), unit="s"
+            os.path.getmtime(f"{self.SCRIPT_PATH}/{self.CACHED_TABLE_NAME}"), unit="s"
         )
 
-        # if (datetime.now() - cache_file_modified_date) / pd.Timedelta('1 hour') > 12:
-        # print("trying to download the table")
+        downloaded = False
+        if (datetime.now() - cache_file_modified_date) / pd.Timedelta("1 hour") > 12:
+            # print("trying to download the table")
 
-        try:
-            r = requests.get(self.DOWNLOAD_LINK)
-            with BytesIO(r.content) as fh:
-                input_table = pd.io.excel.read_excel(fh)
-                input_table.to_excel("cahed_table.xlsx")
+            try:
+                self.DOWNLOAD_LINK = await self.update_table_downloading_link()
+                input_table = await self.download_table()
                 downloaded = True
                 # print("the table downloaded successfully")
-        except Exception as e:
-            input_table = pd.read_excel(f"{self.SCRIPT_PATH}/cahed_table.xlsx")
+            except Exception as e:
+                pass
+                # print("Using cached table")
+
+        if not downloaded:
+            input_table = await self.get_cached_table()
             downloaded = False
-            # print("Using cached table")
 
         input_table.columns = input_table.iloc[0]
         input_table = input_table.iloc[:74]
@@ -383,6 +407,14 @@ class MakeTable:
             ((w - new_w) / 2, (h - new_h) / 2, (w + new_w) / 2, (h + new_h) / 2)
         )
 
+    async def pick_background_image(self):
+        random_image_filename = random.choice(os.listdir(f"{self.SCRIPT_PATH}/images"))
+        background_image = Image.open(
+            f"{self.SCRIPT_PATH}/images/{random_image_filename}"
+        )
+
+        return background_image
+
     async def make_timetable_image(
         self,
         timetable_text,
@@ -391,15 +423,14 @@ class MakeTable:
         text_hight=15,
     ):
 
-        random_image_filename = random.choice(os.listdir(f"{self.SCRIPT_PATH}/images"))
-
         lines_count = len(timetable_text.split("\n"))
         image_size = (400, 30 + 18 * lines_count)
+        background_image = await self.pick_background_image()
+        background_image = (await self.crop_image(background_image, *image_size)).point(
+            lambda pixel: pixel * 0.5
+        )
 
-        img = Image.open(f"{self.SCRIPT_PATH}/images/{random_image_filename}")
-        img = (await self.crop_image(img, *image_size)).point(lambda pixel: pixel * 0.5)
-
-        drawer = ImageDraw.Draw(img)
+        drawer = ImageDraw.Draw(background_image)
         drawer.multiline_text(
             (15, 15),
             timetable_text,
@@ -407,7 +438,7 @@ class MakeTable:
             font=ImageFont.truetype(font_path, text_hight),
         )
 
-        return img
+        return background_image
 
     async def make_timetable_image_buff(self):
         img = await self.make_timetable_image(self.table_text, self.FONT_PATH)

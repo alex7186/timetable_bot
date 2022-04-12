@@ -22,7 +22,7 @@ DOWNLOAD_LINK = CURRENT_CONFIG["DOWNLOAD_LINK"]
 FONT_PATH = CURRENT_CONFIG["FONT_PATH"]
 
 
-async def fucking_async(telegram_id, target_group):
+async def generate_targetgroup_timetable(target_group):
     table = MakeTable(
         target_group,
         SCRIPT_PATH=SCRIPT_PATH,
@@ -30,18 +30,38 @@ async def fucking_async(telegram_id, target_group):
         FONT_PATH=FONT_PATH,
     )
     await table._init()
+
+    return await table.make_timetable_image_buff()
+
+
+async def send_table_to_user(timetable_image_buff, telegram_id):
     await send_message_to_user(
         user_id=telegram_id,
-        image_value=await table.make_timetable_image_buff(),
+        image_value=timetable_image_buff,
         TELEGRAM_KEY=CURRENT_CONFIG["TELEGRAM_KEY"],
     )
-    # print(f"sended to {telegram_id} for group {table.target_group}")
+    # print(f"sended to {telegram_id} for group {timetable_image_buff[:20]}")
 
 
-for telegram_id, target_group_arr in CURRENT_CONFIG["TELEGRAM_GROUPS"].items():
-    for target_group in target_group_arr:
+async def main():
 
-        asyncio.run(fucking_async(telegram_id, target_group))
+    event_loop_tasks = []
+    for target_group, telegram_ids in CURRENT_CONFIG["TELEGRAM_GROUPS"].items():
+        timetable_image_buff = await generate_targetgroup_timetable(target_group)
+        for telegram_id in telegram_ids:
+
+            event_loop_tasks.append(
+                asyncio.ensure_future(
+                    send_table_to_user(timetable_image_buff, telegram_id)
+                )
+            )
+            print(f"content {target_group} to {telegram_id}")
+
+    for event_loop_task in event_loop_tasks:
+        await event_loop_task
+
+
+asyncio.run(main())
 
 # ,
 #         "466262044" : ["ХХБО-04-19", "ХХБО-03-19"]
