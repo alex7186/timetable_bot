@@ -7,7 +7,13 @@ import logging
 
 bot = None
 SCRIPT_PATH = list(sys.argv)[1]
-logging.basicConfig(filename=f"{SCRIPT_PATH}/misc/logfile")
+logging.basicConfig(
+    filename=f"{SCRIPT_PATH}/misc/logfile.txt",
+    filemode="a",
+    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
+    datefmt="%H:%M:%S",
+    level=logging.DEBUG,
+)
 
 
 async def send_message_to_user(
@@ -70,7 +76,6 @@ async def send_table_to_user(timetable_image_buff, telegram_id):
         TELEGRAM_KEY=_get_telegram_bot_key(),
         bot=bot,
     )
-    logging.info(f"sended to {telegram_id} for group {timetable_image_buff[:20]}")
 
 
 async def main():
@@ -86,7 +91,9 @@ async def main():
                     send_table_to_user(timetable_image_buff, telegram_id)
                 )
             )
-            print(f"content {target_group} to {telegram_id}")
+            logging.info(
+                f"sended to {telegram_id} for group {timetable_image_buff[:20]}"
+            )
 
     for event_loop_task in event_loop_tasks:
         await event_loop_task
