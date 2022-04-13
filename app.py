@@ -91,9 +91,7 @@ async def main():
                     send_table_to_user(timetable_image_buff, telegram_id)
                 )
             )
-            logging.info(
-                f"sended to {telegram_id} for group {timetable_image_buff[:20]}"
-            )
+            logging.info(f"sended to {telegram_id} for group {target_group}")
 
     for event_loop_task in event_loop_tasks:
         await event_loop_task
