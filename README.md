@@ -7,7 +7,7 @@
 
 ## Setup
 Install the requremets and configure the CRON table: <br>
-  `cd <path_to_file>` <br>
+  `cd <PATH_TO_PROJET_DIR>` <br>
   `make setup`
 
 to test the script in action enter:<br>
@@ -20,8 +20,6 @@ to disable script:<br>
   to make the bot work properly replace the following lines in `config.json` file:<br>
   * "TELEGRAM_GROUPS" : {<br>
         `<YOUR TELEGRAM ID>` : ["`<YOUR STUDY GROUP>`"]<br>
-
-  * edit `FONT_PATH`, `SCRIPT_PATH` to the <b>propper path</b>
   
   to insert telegram bot key:
   * make file `telegram_bot_key.txt` and put your bot tocken into this file
