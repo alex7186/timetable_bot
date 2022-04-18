@@ -3,4 +3,4 @@ __pycache__
 temp
 telegram_bot_key.txt
 misc/*.xlsx
-misc/logfile.txt
+logfile.txt
