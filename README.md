@@ -33,3 +33,7 @@ to disable script:<br>
 <br>
 ![изображение](https://user-images.githubusercontent.com/16050682/161161996-7db13667-68be-4753-bc80-01161ee3bc13.png)
 
+## COPYRIGHTS
+
+the attached font is distributed under Apache License Version 2.0, January 2004
+
