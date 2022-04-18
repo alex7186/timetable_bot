@@ -6,7 +6,6 @@ import os
 args = list(sys.argv)[1:]
 
 SCRIPT_PATH = SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-2])
-print(SCRIPT_PATH)
 
 with open(f"{SCRIPT_PATH}/misc/config.json", "r") as f:
     config_data = json.load(f)

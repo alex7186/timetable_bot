@@ -30,12 +30,9 @@ async def send_message_to_user(user_id, message=None, image_value=None, bot=None
         await bot.send_photo(user_id, photo=image_value)
     else:
         raise ValueError
-    session = await bot.get_session()
-    await session.close()
 
 
-def _get_telegram_bot_key():
-    global SCRIPT_PATH
+def _get_telegram_bot_key(SCRIPT_PATH):
     with open(f"{SCRIPT_PATH}/telegram_bot_key.txt", "r") as f:
         return f.read()
 
@@ -65,7 +62,7 @@ async def send_table_to_user(timetable_image_buff, telegram_id, bot=None):
 
 async def main(SCRIPT_PATH, REL_FONT_PATH, LINK_XPATH, BASE_URL):
 
-    bot = Bot(token=_get_telegram_bot_key())
+    bot = Bot(token=_get_telegram_bot_key(SCRIPT_PATH))
 
     event_loop_tasks = []
     for target_group, telegram_ids in CURRENT_CONFIG["TELEGRAM_GROUPS"].items():
