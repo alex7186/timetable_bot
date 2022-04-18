@@ -6,7 +6,7 @@ from aiogram import Bot
 from back.table_manager import MakeTable
 from back.config_manager import _get_current_config
 from back.telegram_manager import send_table_to_user
-from back.token_manager import _get_telegram_bot_key
+from back.token_manager import get_token
 
 
 SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-1])
@@ -41,7 +41,7 @@ async def generate_targetgroup_timetable(
 
 async def main(SCRIPT_PATH, REL_FONT_PATH, LINK_XPATH, BASE_URL):
 
-    bot = Bot(token=_get_telegram_bot_key(SCRIPT_PATH))
+    bot = Bot(token=get_token(SCRIPT_PATH))
 
     event_loop_tasks = []
     for target_group, telegram_ids in CURRENT_CONFIG["TELEGRAM_GROUPS"].items():
