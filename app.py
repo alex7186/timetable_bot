@@ -5,6 +5,8 @@ from aiogram import Bot
 
 from back.table_manager import MakeTable
 from back.config_manager import _get_current_config
+from back.telegram_manager import send_table_to_user
+from back.token_manager import _get_telegram_bot_key
 
 
 SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-1])
@@ -22,21 +24,6 @@ logging.basicConfig(
 )
 
 
-async def send_message_to_user(user_id, message=None, image_value=None, bot=None):
-
-    if message != None and image_value == None:
-        await bot.send_message(user_id, message)
-    elif message == None and image_value != None:
-        await bot.send_photo(user_id, photo=image_value)
-    else:
-        raise ValueError
-
-
-def _get_telegram_bot_key(SCRIPT_PATH):
-    with open(f"{SCRIPT_PATH}/token.txt", "r") as f:
-        return f.read()
-
-
 async def generate_targetgroup_timetable(
     target_group, SCRIPT_PATH, BASE_URL, LINK_XPATH, REL_FONT_PATH
 ):
@@ -50,14 +37,6 @@ async def generate_targetgroup_timetable(
     await table._init()
 
     return await table.make_timetable_image_buff()
-
-
-async def send_table_to_user(timetable_image_buff, telegram_id, bot=None):
-    await send_message_to_user(
-        user_id=telegram_id,
-        image_value=timetable_image_buff,
-        bot=bot,
-    )
 
 
 async def main(SCRIPT_PATH, REL_FONT_PATH, LINK_XPATH, BASE_URL):
