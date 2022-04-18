@@ -1,6 +1,6 @@
 .ipynb_checkpoints
 __pycache__
 temp
-telegram_bot_key.txt
-misc/*.xlsx
+token.txt
 logfile.txt
+misc/*.xlsx

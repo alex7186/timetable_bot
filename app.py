@@ -33,7 +33,7 @@ async def send_message_to_user(user_id, message=None, image_value=None, bot=None
 
 
 def _get_telegram_bot_key(SCRIPT_PATH):
-    with open(f"{SCRIPT_PATH}/telegram_bot_key.txt", "r") as f:
+    with open(f"{SCRIPT_PATH}/token.txt", "r") as f:
         return f.read()
 
 
