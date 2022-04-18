@@ -321,14 +321,6 @@ class MakeTable:
             + ")\n\n"
         )
 
-        # table_str += (
-        #     self.week_type[0].upper()
-        #     + self.week_type[1:]
-        #     + " неделя ("
-        #     + str(self.week_delta)
-        #     + ")\n\n"
-        # )
-
         count_of_pairs = 0
         for week_day in days_of_the_week.values():
             try:
