@@ -332,9 +332,7 @@ class MakeTable:
 
             table_str += "\n"
 
-        table_str += (
-            f"Удивительное количество пар !!!\nЦелых {count_of_pairs} всего за неделю"
-        )
+        table_str += f"Удивительное количество пар !!!\nЦелых {count_of_pairs} и всего за неделю !!!"
 
         return table_str
 
