@@ -12,7 +12,7 @@ logging.basicConfig(
     filemode="a",
     format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
     datefmt="%H:%M:%S",
-    level=logging.DEBUG,
+    level=logging.INFO,
 )
 
 
@@ -23,12 +23,12 @@ async def send_message_to_user(
         bot = Bot(token=TELEGRAM_KEY)
         # dp = Dispatcher(bot)
 
-    if message != None and image_value == None:
-        await bot.send_message(user_id, message)
-    elif message == None and image_value != None:
-        await bot.send_photo(user_id, photo=image_value)
-    else:
-        raise ValueError
+    # if message != None and image_value == None:
+    #     await bot.send_message(user_id, message)
+    # elif message == None and image_value != None:
+    #     await bot.send_photo(user_id, photo=image_value)
+    # else:
+    #     raise ValueError
     # await bot.session.close()
 
     return bot
