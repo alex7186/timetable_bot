@@ -9,7 +9,8 @@ from back.config_manager import _get_current_config
 
 SCRIPT_PATH = os.path.realpath(__file__)[:-7]
 CURRENT_CONFIG = _get_current_config(SCRIPT_PATH)
-DOWNLOAD_LINK = CURRENT_CONFIG["DOWNLOAD_LINK"]
+BASE_URL = CURRENT_CONFIG["DOWNLOAD_LINK"]["BASE_URL"]
+LINK_XPATH = CURRENT_CONFIG["DOWNLOAD_LINK"]["LINK_XPATH"]
 REL_FONT_PATH = CURRENT_CONFIG["FONT_PATH"]
 
 logging.basicConfig(
@@ -40,12 +41,13 @@ def _get_telegram_bot_key():
 
 
 async def generate_targetgroup_timetable(
-    target_group, SCRIPT_PATH, DOWNLOAD_LINK, REL_FONT_PATH
+    target_group, SCRIPT_PATH, BASE_URL, LINK_XPATH, REL_FONT_PATH
 ):
     table = MakeTable(
         target_group,
         SCRIPT_PATH=SCRIPT_PATH,
-        DOWNLOAD_LINK=DOWNLOAD_LINK,
+        BASE_URL=BASE_URL,
+        LINK_XPATH=LINK_XPATH,
         REL_FONT_PATH=REL_FONT_PATH,
     )
     await table._init()
@@ -61,7 +63,7 @@ async def send_table_to_user(timetable_image_buff, telegram_id, bot=None):
     )
 
 
-async def main(SCRIPT_PATH, REL_FONT_PATH, DOWNLOAD_LINK):
+async def main(SCRIPT_PATH, REL_FONT_PATH, LINK_XPATH, BASE_URL):
 
     bot = Bot(token=_get_telegram_bot_key())
 
@@ -71,7 +73,8 @@ async def main(SCRIPT_PATH, REL_FONT_PATH, DOWNLOAD_LINK):
             target_group=target_group,
             SCRIPT_PATH=SCRIPT_PATH,
             REL_FONT_PATH=REL_FONT_PATH,
-            DOWNLOAD_LINK=DOWNLOAD_LINK,
+            LINK_XPATH=LINK_XPATH,
+            BASE_URL=BASE_URL,
         )
         for telegram_id in telegram_ids:
 
@@ -93,7 +96,8 @@ async def main(SCRIPT_PATH, REL_FONT_PATH, DOWNLOAD_LINK):
 asyncio.run(
     main(
         SCRIPT_PATH=SCRIPT_PATH,
-        DOWNLOAD_LINK=DOWNLOAD_LINK,
+        BASE_URL=BASE_URL,
+        LINK_XPATH=LINK_XPATH,
         REL_FONT_PATH=REL_FONT_PATH,
     )
 )

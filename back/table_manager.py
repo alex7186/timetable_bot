@@ -6,6 +6,9 @@ from io import BytesIO
 import os
 import random
 
+from lxml import etree
+from urllib.request import urlopen
+
 from back.image_manager import TextImage
 
 # setup global consts
@@ -33,14 +36,17 @@ class MakeTable:
     def __init__(
         self,
         target_group,
-        SCRIPT_PATH=None,
-        DOWNLOAD_LINK=None,
-        REL_FONT_PATH=None,
+        SCRIPT_PATH,
+        LINK_XPATH,
+        BASE_URL,
+        REL_FONT_PATH,
         CACHED_TABLE_NAME="misc/cached_table.xlsx",
     ):
+
         "setup variables"
         self.SCRIPT_PATH = SCRIPT_PATH
-        self.DOWNLOAD_LINK = DOWNLOAD_LINK
+        self.LINK_XPATH = LINK_XPATH
+        self.BASE_URL = BASE_URL
         self.REL_FONT_PATH = REL_FONT_PATH
         self.target_group = target_group
         self.CACHED_TABLE_NAME = CACHED_TABLE_NAME
@@ -48,6 +54,7 @@ class MakeTable:
         self.week_type = ""  # odd/even week number
         self.week_delta = 0  # number of weeks since starting
         self.background_image_path = ""
+        self.DOWNLOAD_LINK = ""
 
     async def _init(self):
 
@@ -55,6 +62,7 @@ class MakeTable:
         start_week = datetime.strptime("07.02.2022", "%d.%m.%Y").isocalendar()[1]
 
         await self.pick_background_image_path()
+        await self.make_download_link()
 
         self.week_delta = current_week - start_week + 1
 
@@ -71,6 +79,14 @@ class MakeTable:
 
         # self.make_timetable_image_buff()
 
+    async def make_download_link(self):
+        response = urlopen(self.BASE_URL)
+        htmlparser = etree.HTMLParser()
+        tree = etree.parse(response, htmlparser)
+        link_element = tree.xpath(self.LINK_XPATH)
+
+        self.DOWNLOAD_LINK = link_element[0].values()[1]
+
     async def pick_background_image_path(self):
         random_image_filename = random.choice(
             os.listdir(f"{self.SCRIPT_PATH}/img/images")
@@ -85,7 +101,7 @@ class MakeTable:
 
         with BytesIO(r.content) as fh:
             input_table = pd.io.excel.read_excel(fh)
-            input_table.to_excel(f"{self.SCRIPT_PATH}/{self.CACHE_TABLE_NAME}")
+            input_table.to_excel(f"{self.SCRIPT_PATH}/{self.CACHED_TABLE_NAME}")
 
         return input_table
 
@@ -93,25 +109,27 @@ class MakeTable:
         return pd.read_excel(f"{self.SCRIPT_PATH}/{self.CACHED_TABLE_NAME}")
 
     async def update_table_downloading_link(self):
-        pass
+        return self.DOWNLOAD_LINK
 
     async def get_table(self):
         "parsing the input table, making table cache"
 
         # file was modified farther then 12h -> download new file
-        cache_file_modified_date = pd.to_datetime(
-            os.path.getmtime(f"{self.SCRIPT_PATH}/{self.CACHED_TABLE_NAME}"), unit="s"
-        )
+        try:
+            cache_file_modified_date = pd.to_datetime(
+                os.path.getmtime(f"{self.SCRIPT_PATH}/{self.CACHED_TABLE_NAME}"),
+                unit="s",
+            )
+        except FileNotFoundError:
+            cache_file_modified_date = pd.to_datetime(0, unit="s")
 
         downloaded = False
         if (datetime.now() - cache_file_modified_date) / pd.Timedelta("1 hour") > 12:
             # print("trying to download the table")
 
             try:
-                self.DOWNLOAD_LINK = await self.update_table_downloading_link()
                 input_table = await self.download_table()
                 downloaded = True
-                # print("the table downloaded successfully")
             except Exception as e:
                 pass
                 # print("Using cached table")

@@ -3,3 +3,6 @@
 04:40:37,93 root INFO sended to 747558089 for group ХХБО-04-19
 04:40:57,532 root INFO sended to 747558089 for group ХХБО-04-19
 04:51:44,382 root INFO sended to 747558089 for group ХХБО-04-19
+05:34:26,93 root INFO sended to 747558089 for group ХХБО-04-19
+05:38:04,688 root INFO sended to 747558089 for group ХХБО-04-19
+05:43:33,795 root INFO sended to 747558089 for group ХХБО-04-19
