@@ -8,14 +8,14 @@ push:
 	git push origin master
 
 setup:
-	pip3 install -r ./misc/requirements.txt
 	cd ~/scripts/timetable_bot
-	python3 /.crontab_manager.py start
+	pip3 install -r ./misc/requirements.txt
+	python3 ./back/crontab_manager.py start
 
 start:
 	cd ~/scripts/timetable_bot
-	python3 ./app.py /home/pi/scripts/timetable_bot
+	python3 ./app.py
 
 stop:
 	cd ~/scripts/timetable_bot	
-	python3 ./crontab_manager.py stop
+	python3 ./back/crontab_manager.py stop
