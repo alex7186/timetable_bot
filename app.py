@@ -7,7 +7,7 @@ from back.table_manager import MakeTable
 from back.config_manager import _get_current_config
 
 
-SCRIPT_PATH = os.path.realpath(__file__)[:-7]
+SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-1])
 CURRENT_CONFIG = _get_current_config(SCRIPT_PATH)
 BASE_URL = CURRENT_CONFIG["DOWNLOAD_LINK"]["BASE_URL"]
 LINK_XPATH = CURRENT_CONFIG["DOWNLOAD_LINK"]["LINK_XPATH"]

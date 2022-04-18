@@ -108,9 +108,6 @@ class MakeTable:
     async def get_cached_table(self):
         return pd.read_excel(f"{self.SCRIPT_PATH}/{self.CACHED_TABLE_NAME}")
 
-    async def update_table_downloading_link(self):
-        return self.DOWNLOAD_LINK
-
     async def get_table(self):
         "parsing the input table, making table cache"
 
@@ -124,7 +121,7 @@ class MakeTable:
             cache_file_modified_date = pd.to_datetime(0, unit="s")
 
         downloaded = False
-        if (datetime.now() - cache_file_modified_date) / pd.Timedelta("1 hour") > 12:
+        if (datetime.now() - cache_file_modified_date) / pd.Timedelta("1 hour") > 25:
             # print("trying to download the table")
 
             try:
