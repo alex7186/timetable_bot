@@ -8,7 +8,7 @@ push:
 	@python -m black .
 	@git add .
 	@git commit -m $(commit_name)
-	@git push origin main
+	@git push origin master
 	@echo "\n✅ succussfully pulled as $(commit_name)"
 
 setup:
