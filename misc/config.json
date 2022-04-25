@@ -1,5 +1,6 @@
 {
     "APP_NAME" : "timetable_bot",
+    "CRONTAB_SETUP" : "45 0 * * *",
     "FONT_PATH" : "img/fonts/RobotoMono-Medium.ttf",
     "TELEGRAM_GROUPS" : {
         "ХХБО-04-19" : ["747558089"]

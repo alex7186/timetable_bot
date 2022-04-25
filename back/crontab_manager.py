@@ -3,9 +3,13 @@ from crontab import CronTab
 import sys
 import os
 
-args = list(sys.argv)[1:]
+from config_manager import get_config
 
-SCRIPT_PATH = SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-2])
+args = list(sys.argv)[1:]
+SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-2])
+CONFIG = get_config(SCRIPT_PATH)
+CRONTAB_SETUP = CONFIG["CRONTAB_SETUP"]
+
 
 with open(f"{SCRIPT_PATH}/misc/config.json", "r") as f:
     config_data = json.load(f)
@@ -19,7 +23,7 @@ if "start" in args:
             cron.remove(existing_job)
 
     job = cron.new(command=f"python3 {SCRIPT_PATH}/app.py", comment=APP_NAME)
-    job.setall(45, 0, None, None, None)
+    job.setall(CRONTAB_SETUP)
 
     cron.write()
 

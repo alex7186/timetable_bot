@@ -4,13 +4,13 @@ import logging
 from aiogram import Bot
 
 from back.table_manager import MakeTable
-from back.config_manager import _get_current_config
+from back.config_manager import get_config
 from back.telegram_manager import send_table_to_user
 from back.token_manager import get_token
 
 
 SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-1])
-CURRENT_CONFIG = _get_current_config(SCRIPT_PATH)
+CURRENT_CONFIG = get_config(SCRIPT_PATH)
 BASE_URL = CURRENT_CONFIG["DOWNLOAD_LINK"]["BASE_URL"]
 LINK_XPATH = CURRENT_CONFIG["DOWNLOAD_LINK"]["LINK_XPATH"]
 REL_FONT_PATH = CURRENT_CONFIG["FONT_PATH"]
