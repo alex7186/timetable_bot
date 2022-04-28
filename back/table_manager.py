@@ -41,6 +41,7 @@ class MakeTable:
         BASE_URL,
         REL_FONT_PATH,
         CACHED_TABLE_NAME="misc/cached_table.xlsx",
+        FULL_LINK_PATH="",
     ):
 
         "setup variables"
@@ -55,6 +56,7 @@ class MakeTable:
         self.week_delta = 0  # number of weeks since starting
         self.background_image_path = ""
         self.DOWNLOAD_LINK = ""
+        self.FULL_LINK_PATH = FULL_LINK_PATH
 
     async def _init(self):
 
@@ -62,7 +64,10 @@ class MakeTable:
         start_week = datetime.strptime("07.02.2022", "%d.%m.%Y").isocalendar()[1]
 
         await self.pick_background_image_path()
-        await self.make_download_link()
+        if self.FULL_LINK_PATH == "":
+            await self.make_download_link()
+        else:
+            self.DOWNLOAD_LINK = self.FULL_LINK_PATH
 
         self.week_delta = current_week - start_week + 1
 

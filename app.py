@@ -33,6 +33,7 @@ async def generate_targetgroup_timetable(
         BASE_URL=BASE_URL,
         LINK_XPATH=LINK_XPATH,
         REL_FONT_PATH=REL_FONT_PATH,
+        FULL_LINK_PATH=CURRENT_CONFIG["DOWNLOAD_LINK"].get("FULL_LINK_PATH"),
     )
     await table._init()
 
