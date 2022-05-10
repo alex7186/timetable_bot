@@ -23,7 +23,7 @@ push-force:
 	@git add .
 	-@git commit -m $(commit_name)
 	@echo "\n🚩 FORCE 🚩 pushing as $(commit_name)"
-	@git push --force origin main
+	@git push --force origin master
 	@echo "\n✅ done!"
 
 setup:
