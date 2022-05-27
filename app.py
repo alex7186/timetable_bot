@@ -6,7 +6,7 @@ from aiogram import Bot
 from back.config_manager import get_config
 from back.telegram_manager import send_table_to_user
 from back.token_manager import get_token
-from back.table.table_manager import make_timetable_image_buff
+from back.table_manager import make_timetable_image_buff
 
 
 SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-1])
