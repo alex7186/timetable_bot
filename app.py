@@ -1,83 +1,40 @@
 import asyncio
 import os
-import logging
 from aiogram import Bot
 
-from back.table_manager import MakeTable
+
 from back.config_manager import get_config
 from back.telegram_manager import send_table_to_user
 from back.token_manager import get_token
+from back.table.table_manager import make_timetable_image_buff
 
 
 SCRIPT_PATH = "/".join(os.path.realpath(__file__).split("/")[:-1])
-CURRENT_CONFIG = get_config(SCRIPT_PATH)
-BASE_URL = CURRENT_CONFIG["DOWNLOAD_LINK"]["BASE_URL"]
-LINK_XPATH = CURRENT_CONFIG["DOWNLOAD_LINK"]["LINK_XPATH"]
-REL_FONT_PATH = CURRENT_CONFIG["FONT_PATH"]
-
-logging.basicConfig(
-    filename=f"{SCRIPT_PATH}/misc/logfile.txt",
-    filemode="a",
-    format="%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s",
-    datefmt="%H:%M:%S",
-    level=logging.INFO,
-)
 
 
-async def generate_targetgroup_timetable(
-    target_group, SCRIPT_PATH, BASE_URL, LINK_XPATH, REL_FONT_PATH
-):
-    table = MakeTable(
-        target_group,
-        SCRIPT_PATH=SCRIPT_PATH,
-        BASE_URL=BASE_URL,
-        LINK_XPATH=LINK_XPATH,
-        REL_FONT_PATH=REL_FONT_PATH,
-        FULL_LINK_PATH=CURRENT_CONFIG["DOWNLOAD_LINK"].get("FULL_LINK_PATH"),
-    )
-    await table._init()
+async def start_app():
 
-    return await table.make_timetable_image_buff()
-
-
-async def main(SCRIPT_PATH, REL_FONT_PATH, LINK_XPATH, BASE_URL):
-
+    global SCRIPT_PATH
+    CURRENT_CONFIG = get_config(SCRIPT_PATH)
     bot = Bot(token=get_token(SCRIPT_PATH))
 
-    event_loop_tasks = []
     for target_group, telegram_ids in CURRENT_CONFIG["TELEGRAM_GROUPS"].items():
-        timetable_image_buff = await generate_targetgroup_timetable(
-            target_group=target_group,
+
+        timetable_image_buff = make_timetable_image_buff(
             SCRIPT_PATH=SCRIPT_PATH,
-            REL_FONT_PATH=REL_FONT_PATH,
-            LINK_XPATH=LINK_XPATH,
-            BASE_URL=BASE_URL,
+            CURRENT_CONFIG=CURRENT_CONFIG,
+            target_group=target_group,
         )
+
         for telegram_id in telegram_ids:
-
-            event_loop_tasks.append(
-                asyncio.ensure_future(
-                    send_table_to_user(timetable_image_buff, telegram_id, bot=bot)
-                )
-            )
-            logging.info(f"sended to {telegram_id} for group {target_group}")
-
-    for event_loop_task in event_loop_tasks:
-        await event_loop_task
+            await send_table_to_user(timetable_image_buff, telegram_id, bot=bot)
 
     if bot != None:
         session = await bot.get_session()
         await session.close()
 
 
-asyncio.run(
-    main(
-        SCRIPT_PATH=SCRIPT_PATH,
-        BASE_URL=BASE_URL,
-        LINK_XPATH=LINK_XPATH,
-        REL_FONT_PATH=REL_FONT_PATH,
-    )
-)
+asyncio.run(start_app())
 
-# ,
-#         "466262044" : ["ХХБО-04-19", "ХХБО-03-19"]
+
+# "466262044" : ["ХХБО-04-19", "ХХБО-03-19"]

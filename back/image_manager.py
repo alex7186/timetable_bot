@@ -11,14 +11,14 @@ class TextImage:
 
         self.background_image = Image.open(background_image_path)
 
-    async def crop_image(self, img, new_w, new_h):
+    def crop_image(self, img, new_w, new_h):
         w, h = img.size
 
         return img.crop(
             ((w - new_w) / 2, (h - new_h) / 2, (w + new_w) / 2, (h + new_h) / 2)
         )
 
-    async def make_timetable_image(
+    def make_timetable_image(
         self,
         color=(255, 255, 255),
         text_hight=15,
@@ -28,7 +28,7 @@ class TextImage:
         image_size = (400, 30 + 18 * lines_count)
 
         self.background_image = (
-            await self.crop_image(self.background_image, *image_size)
+            self.crop_image(self.background_image, *image_size)
         ).point(lambda pixel: pixel * 0.5)
 
         drawer = ImageDraw.Draw(self.background_image)
