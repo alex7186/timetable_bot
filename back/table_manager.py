@@ -12,7 +12,7 @@ dow = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"]
 sf_pairs = ["900-1030", "1040-1210", "1240-1410", "1420-1550", "1620-1750", "1800-1930"]
 start_date = "07.02.2022"
 
-today_dow = dow[datetime.now().weekday() + 1]
+today_dow = dow[datetime.now().weekday()]
 
 
 def get_table(
