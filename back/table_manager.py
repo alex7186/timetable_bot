@@ -98,8 +98,8 @@ def split_table(table, target_group):
     )
 
     return (
-        clean_df_table(target_table_odd),  # .reset_index(drop=True),
-        clean_df_table(target_table_even),  # .reset_index(drop=True),
+        clean_df_table(target_table_odd),
+        clean_df_table(target_table_even),
     )
 
 

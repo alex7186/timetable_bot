@@ -1,5 +1,5 @@
 _today =`date '+%Y-%m-%d  %H:%M:%S'`
-_commit_name = "autocommit $(today)"
+_commit_name = "autocommit $(_today)"
 app_name = timetable_bot
 _path = $(CURDIR)
 
