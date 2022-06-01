@@ -1,32 +1,42 @@
 # timetable_bot
 
   this bot allows you to receive the schedule of couples of the University of RTU MIREA in personal messages in the telegram messenger in the form of cute pictures.
-<br><br>
+
+  this bot is tightly integrated with linux Cron using `python-crontab` library. it adds and removes lines in crontab depending on whether the bot is enabled/disabled
+
   (The schedule for the next day on weekdays at 0:45, the schedule for the whole week is on weekends)
 
 
 ## Setup
 Install the requremets and configure the CRON table: <br>
-  `cd <PATH_TO_PROJET_DIR>` <br>
-  `make setup`
+  ```
+  cd <PATH_TO_PROJET_DIR>
+  make setup
+  ```
 
 to test the script in action enter:<br>
-  `make start`
+  ```
+  make start
+  ```
   
 to disable script:<br>
-  `make stop`
+  ```
+  make stop
+  ```
   
 ## Setting configuration
   to make the bot work properly replace the following lines in `config.json` file:<br>
-  * "TELEGRAM_GROUPS" : {<br>
-        `<YOUR TELEGRAM ID>` : [<br>
-        `"<YOUR STUDY GROUP #1>"` , <br>
-        `"<YOUR STUDY GROUP #2>"` , <br>
-        `...`<br>
-        ]
+  ```
+  "TELEGRAM_GROUPS" : {<br>
+    "<YOUR STUDY GROUP #1>"` : [ <br>
+        "<TELEGRAM ID 1>",<br>
+        "<TELEGRAM ID 2>",<br>
+        ...<br>
+    ]
+  ```
   
   to insert telegram bot key:
-  * make file `token.txt` and put your bot token into this file
+  * create `token.txt` file and put your bot token into this file
   
 ## Example of program execution
 ![изображение](https://user-images.githubusercontent.com/16050682/161161953-d8489159-f5a6-4939-98d0-bbd9985afba6.png)
