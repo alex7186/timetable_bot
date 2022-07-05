@@ -33,11 +33,14 @@ def get_table(
         table.to_excel(f"{CACHED_TABLE_PATH}/{CACHED_TABLE_NAME}", index=False)
 
     table = False
-
+    download_failure = False
     if DOWNLOAD_LINK:
-        table = download_table(DOWNLOAD_LINK)
+        try:
+            table = download_table(DOWNLOAD_LINK)
+        except Exception:
+            download_failure = True
 
-    elif CACHED_TABLE_PATH and CACHED_TABLE_NAME:
+    if CACHED_TABLE_PATH and CACHED_TABLE_NAME or download_failure:
         table = get_cached_table(CACHED_TABLE_PATH, CACHED_TABLE_NAME)
 
     else:
@@ -131,6 +134,9 @@ def daily_table_text(table, target_group):
     current_week = datetime.now().isocalendar()[1]
     start_week = datetime.strptime(start_date, "%d.%m.%Y").isocalendar()[1]
 
+    if current_week > 16:
+        raise ValueError
+
     odd_week = (current_week - start_week) % 2 == 1
     today_list = list(datetime.now().date().timetuple())[:3][::-1]
     times_arr = []
@@ -170,6 +176,14 @@ def weekly_table_text(table, target_group):
 
     odd_week = (current_week - start_week) % 2 == 1
     today_list = list(datetime.now().date().timetuple())[:3][::-1]
+
+    if current_week > 16:
+
+        s = ""
+        s += "\nА учебы больше нет)))\n\n\n"
+        s += " * Я из прошлого надеюсь, \n   что у тебя все круто\n\n"
+
+        return s
 
     s = target_group + "\n"
     s += f'Сегодня {".".join(str(el) for el in today_list)} '
