@@ -15,7 +15,7 @@ push-force:
 	@$(MAKE) --no-print-directory _black
 	@$(MAKE) --no-print-directory _git_commit
 	@echo "\n⚙️  🚩FORCE🚩  pushing as $(_commit_name)\n"
-	@git push --force origin main
+	@git push --force origin master
 	@echo "\n✅  done!"
 
 _black:
