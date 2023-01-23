@@ -41,3 +41,6 @@ async def start_app():
 
 
 asyncio.run(start_app())
+
+
+# 750675537 Никита

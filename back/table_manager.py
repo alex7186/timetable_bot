@@ -177,13 +177,13 @@ def weekly_table_text(table, target_group):
     odd_week = (current_week - start_week) % 2 == 1
     today_list = list(datetime.now().date().timetuple())[:3][::-1]
 
-    if current_week > 16:
+    # if current_week > 16:
 
-        s = ""
-        s += "\nА учебы больше нет)))\n\n\n"
-        s += " * Я из прошлого надеюсь, \n   что у тебя все круто\n\n"
+    #     s = ""
+    #     s += "\nА учебы больше нет)))\n\n\n"
+    #     s += " * Я из прошлого надеюсь, \n   что у тебя все круто\n\n"
 
-        return s
+    #     return s
 
     s = target_group + "\n"
     s += f'Сегодня {".".join(str(el) for el in today_list)} '
@@ -231,7 +231,7 @@ def genegate_timetable_text(
 
     global today_dow
 
-    if today_dow == "Вс":
+    if today_dow == "Вс" or True:
         return weekly_table_text(table, target_group)
 
     else:
